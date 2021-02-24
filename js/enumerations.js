@@ -7,15 +7,16 @@ const MOVEMENT = {
 };
 
 const DIRECTION = {
+  NONE: 0,
   UP: 1,
   DOWN: 2,
   LEFT: 3,
   RIGHT: 4,
-}
+};
 
 const TYPE_TAGS = {
-  PLAYER: "",
-  OBSTACLE: "",
+  PLAYER: "player",
+  OBSTACLE: "obstacle",
 };
 
 const ASSET_TAGS = {

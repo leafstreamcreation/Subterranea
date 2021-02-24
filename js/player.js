@@ -1,6 +1,6 @@
 class Player extends Actor {
-  constructor() {
-    super(TYPE_TAGS.PLAYER, ASSET_TAGS.PLAYER);
+  constructor(speed) {
+    super(TYPE_TAGS.PLAYER, ASSET_TAGS.PLAYER, speed);
     this.health = 100;
   }
 }
