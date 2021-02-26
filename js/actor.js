@@ -1,6 +1,6 @@
 class Actor extends GameObject {
-  constructor(assetTag, typeTag, speed) {
-    super(assetTag, typeTag, true);
+  constructor(assetTag, typeTag, id, speed) {
+    super(assetTag, typeTag, id);
     this.moveState = {
       vertical: MOVEMENT.NONE,
       horizontal: MOVEMENT.NONE,
@@ -110,8 +110,25 @@ class Actor extends GameObject {
   updateBlockedState(gameObject) {
     const dx = gameObject.center().x - this.center().x;
     const dy = gameObject.center().y - this.center().y;
-    if (Math.abs(dx) > Math.abs(dy))
-      this.blocked.horizontal = dx > 0 ? MOVEMENT.RIGHT : MOVEMENT.LEFT;
-    else this.blocked.vertical = dy > 0 ? MOVEMENT.DOWN : MOVEMENT.UP;
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (dx > 0) {
+        this.blocked.horizontal = MOVEMENT.RIGHT;
+        this.position.x = gameObject.position.x - this.size.width;
+      }
+      else {
+        this.blocked.horizontal = MOVEMENT.LEFT;
+        this.position.x = gameObject.position.x + gameObject.size.width;
+      }
+    }
+    else {
+      if (dy > 0) {
+        this.blocked.vertical = MOVEMENT.DOWN;
+        this.position.y = gameObject.position.y - this.size.height;
+      }
+      else {
+        this.blocked.vertical = MOVEMENT.UP;
+        this.position.y = gameObject.position.y + gameObject.size.height;
+      }
+    }
   }
 }

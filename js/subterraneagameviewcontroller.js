@@ -11,9 +11,10 @@ class SubterraneaGame {
     this.grid = new Grid(this.boardWidth, SubterraneaGame.GRID_SIZE);
 
     this.player = new Player(SubterraneaGame.PLAYER_SPEED);
+    this.bombs = [];
     this.actors = [this.player];
 
-    this.obstacles = this.generateObstacles(1);
+    this.obstacles = this.generateObstacles(50);
     this.fillGrid();
 
     this.assets = {};
@@ -28,8 +29,9 @@ class SubterraneaGame {
     this.assets[ASSET_TAGS.BOARD]();
     //draw sinkholes
     //draw terrain
-    this.assets[ASSET_TAGS.ROCK](0);
+    this.obstacles.forEach(obstacle => this.assets[ASSET_TAGS.ROCK](obstacle));
     //draw monsters
+    this.bombs.forEach(bomb => this.assets[ASSET_TAGS.BOMB](bomb));
     //draw player
     this.assets[ASSET_TAGS.PLAYER]();
   }
@@ -39,7 +41,7 @@ class SubterraneaGame {
       this.context.fillStyle = "rgb(255, 255, 0)";
       this.context.fillRect(0, 0, this.boardWidth, this.boardHeight);
     };
-    this.assets[ASSET_TAGS.BOARD]();
+    //this.assets[ASSET_TAGS.BOARD]();
 
     this.assets[ASSET_TAGS.PLAYER] = () => {
       this.context.fillStyle = "rgb(0, 255, 0)";
@@ -50,29 +52,36 @@ class SubterraneaGame {
         this.player.size.height
       );
     };
-    this.assets[ASSET_TAGS.PLAYER]();
+    //this.assets[ASSET_TAGS.PLAYER]();
 
-    this.assets[ASSET_TAGS.ROCK] = (id) => {
+    this.assets[ASSET_TAGS.ROCK] = (rock) => {
       this.context.fillStyle = "rgb(0, 0, 255)";
       this.context.fillRect(
-        this.obstacles[id].position.x,
-        this.obstacles[id].position.y,
-        this.obstacles[id].size.width,
-        this.obstacles[id].size.height
+        this.obstacles[rock.id].position.x,
+        this.obstacles[rock.id].position.y,
+        this.obstacles[rock.id].size.width,
+        this.obstacles[rock.id].size.height
       );
     };
-    //TODO: DRAW MULTIPLE OBSTACLES
-    this.assets[ASSET_TAGS.ROCK](0);
+    //this.assets[ASSET_TAGS.ROCK](0);
+
+    this.assets[ASSET_TAGS.BOMB] = (bomb) => {
+      this.context.fillStyle = "rgb(255, 0, 0)";
+      this.context.fillRect(
+        this.bombs[bomb.id].position.x,
+        this.bombs[bomb.id].position.y,
+        this.bombs[bomb.id].size.width,
+        this.bombs[bomb.id].size.height
+      );
+    };
   }
 
   moveActors() {
-    //for each actor:
-    //
-    //if there is
-    this.player.move(this.boardWidth);
+    this.actors.forEach(actor => actor.move(this.boardWidth));
   }
 
   handleKeyDown(key) {
+    //dconsole.log(key);
     switch (key) {
       case KEY_TAGS.S:
       case KEY_TAGS.DOWN:
@@ -89,6 +98,10 @@ class SubterraneaGame {
       case KEY_TAGS.D:
       case KEY_TAGS.RIGHT:
         this.player.moveState.horizontal = MOVEMENT.RIGHT;
+        break;
+
+      case KEY_TAGS.SPACE:
+        this.newBomb();
         break;
       default:
         break;
@@ -116,18 +129,47 @@ class SubterraneaGame {
 
   generateObstacles(number) {
     const obstacles = [];
-    for (let i = 0; i < number; i++) {
-      obstacles.push(new GameObject(TYPE_TAGS.OBSTACLE, ASSET_TAGS.ROCK, true));
+    for (let id = 0; id < number; id++) {
+      obstacles.push(new GameObject(TYPE_TAGS.OBSTACLE, ASSET_TAGS.ROCK, id));
     }
     return obstacles;
   }
 
   fillGrid() {
-    this.grid.container[0][0].objects.push(this.player);
-    this.player.newContainer(this.grid.container[0][0]);
+    const playerGridX = Math.floor(SubterraneaGame.GRID_SIZE * Math.random());
+    const playerGridY = Math.floor(SubterraneaGame.GRID_SIZE * Math.random());
+    this.grid.container[playerGridY][playerGridX].objects.push(this.player);
+    this.player.newContainer(this.grid.container[playerGridY][playerGridX]);
     this.player.snapToGrid();
 
-    this.grid.container[7][7].objects.push(this.obstacles[0]);
-    this.obstacles[0].newContainer(this.grid.container[7][7]);
+    const obstaclePlacements = new Shuffler(this.getObstaclePlacementsAround(playerGridY, playerGridX, 1));
+    this.obstacles.forEach(obstacle => {
+      const index = obstaclePlacements.drawNext();
+      this.grid.container[index.y][index.x].objects.push(obstacle);
+      obstacle.newContainer(this.grid.container[index.y][index.x]);
+    });
   }
+
+  getObstaclePlacementsAround(avoidY, avoidX, distance) {
+    const placements = [];
+    for (let y = 0; y < SubterraneaGame.GRID_SIZE; y++) {
+      for (let x = 0; x < SubterraneaGame.GRID_SIZE; x++) {
+
+        if (Math.abs(avoidX - x) > distance || Math.abs(avoidY - y) > distance) {
+            placements.push({y: y, x: x});
+        }
+
+      }
+    }
+    return placements
+  }
+
+  newBomb() {
+    const bomb = new Actor(ASSET_TAGS.BOMB, TYPE_TAGS.BOMB, this.bombs.length, 5);
+    bomb.newContainer(this.player.container);
+    bomb.snapToGrid();
+    this.grid.container[bomb.container.gridY][bomb.container.gridX].objects.push(bomb);
+    this.bombs.push(bomb);
+    this.actors.push(bomb);
+  }  
 }

@@ -1,11 +1,16 @@
 class GameObject {
-  constructor(assetTag, typeTag, blocksActors) {
+  constructor(assetTag, typeTag, id) {
     this.container = null;
     this.position = null;
     this.size = null;
     this.asset = assetTag;
     this.type = typeTag;
-    this.blocksActors = blocksActors;
+    this.id = id;
+    switch (typeTag) {
+      default:
+        this.blocksActors = true;
+        break;
+    }
   }
 
   newContainer(container) {

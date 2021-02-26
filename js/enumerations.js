@@ -24,12 +24,14 @@ const DIRECTION = {
 
 const TYPE_TAGS = {
   PLAYER: "player",
+  BOMB: "bomb",
   OBSTACLE: "obstacle",
 };
 
 const ASSET_TAGS = {
   BOARD: "board",
   PLAYER: "player",
+  BOMB: "bomb",
   ROCK: "rock",
 };
 
@@ -42,4 +44,5 @@ const KEY_TAGS = {
   W: "w",
   DOWN: "ArrowDown",
   S: "s",
+  SPACE: " ",
 };
