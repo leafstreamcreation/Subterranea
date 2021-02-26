@@ -117,7 +117,7 @@ class SubterraneaGame {
   generateObstacles(number) {
     const obstacles = [];
     for (let i = 0; i < number; i++) {
-      obstacles.push(new GameObject(TYPE_TAGS.OBSTACLE, ASSET_TAGS.ROCK));
+      obstacles.push(new GameObject(TYPE_TAGS.OBSTACLE, ASSET_TAGS.ROCK, true));
     }
     return obstacles;
   }

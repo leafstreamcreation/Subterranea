@@ -6,6 +6,14 @@ const MOVEMENT = {
   NONE: 0,
 };
 
+const BOUNDS = {
+  INSIDE: 0,
+  OUTSIDE_UP: 1,
+  OUTSIDE_RIGHT: 2,
+  OUTSIDE_DOWN: 3,
+  OUTSIDE_LEFT: 4,
+};
+
 const DIRECTION = {
   NONE: 0,
   UP: 1,

@@ -27,12 +27,14 @@ class ObjectContainer {
     return false;
   }
 
-  outOfBounds(object) {
-    if (object.center().x < this.x) return DIRECTION.LEFT;
-    else if (object.center().x > this.x + this.width) return DIRECTION.RIGHT;
-    else if (object.center().y < this.y) return DIRECTION.UP;
-    else if (object.center().y > this.y + this.height) return DIRECTION.DOWN;
-    return DIRECTION.NONE;
+  isInBounds(object) {
+    if (object.center().x < this.x) return BOUNDS.OUTSIDE_LEFT;
+    else if (object.center().x > this.x + this.width)
+      return BOUNDS.OUTSIDE_RIGHT;
+    else if (object.center().y < this.y) return BOUNDS.OUTSIDE_UP;
+    else if (object.center().y > this.y + this.height)
+      return BOUNDS.OUTSIDE_DOWN;
+    return BOUNDS.INSIDE;
   }
 
   nextContainer(direction) {
