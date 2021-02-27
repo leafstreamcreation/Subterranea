@@ -1,6 +1,6 @@
 class Actor extends GameObject {
-  constructor(assetTag, typeTag, id, speed) {
-    super(assetTag, typeTag, id);
+  constructor(controller, assetTag, typeTag, id, speed) {
+    super(controller, assetTag, typeTag, id);
     this.moveState = {
       vertical: MOVEMENT.NONE,
       horizontal: MOVEMENT.NONE,
@@ -31,6 +31,10 @@ class Actor extends GameObject {
 
     this.insideContainer = this.container.isInBounds(this);
     if (this.insideContainer !== BOUNDS.INSIDE) this.transitionToNewContainer();
+  }
+
+  refreshNearbyObjects() {
+    this.nearbyObjects = this.container.nearbyObjects();
   }
 
   checkForCollisions() {
@@ -96,6 +100,7 @@ class Actor extends GameObject {
   }
 
   collidesWith(gameObject) {
+    if (gameObject === null) return false;
     if (
       this.position.x < gameObject.position.x + gameObject.size.width &&
       this.position.x + this.size.width > gameObject.position.x &&
@@ -114,18 +119,15 @@ class Actor extends GameObject {
       if (dx > 0) {
         this.blocked.horizontal = MOVEMENT.RIGHT;
         this.position.x = gameObject.position.x - this.size.width;
-      }
-      else {
+      } else {
         this.blocked.horizontal = MOVEMENT.LEFT;
         this.position.x = gameObject.position.x + gameObject.size.width;
       }
-    }
-    else {
+    } else {
       if (dy > 0) {
         this.blocked.vertical = MOVEMENT.DOWN;
         this.position.y = gameObject.position.y - this.size.height;
-      }
-      else {
+      } else {
         this.blocked.vertical = MOVEMENT.UP;
         this.position.y = gameObject.position.y + gameObject.size.height;
       }

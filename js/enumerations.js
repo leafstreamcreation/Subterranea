@@ -25,7 +25,7 @@ const DIRECTION = {
 const TYPE_TAGS = {
   PLAYER: "player",
   BOMB: "bomb",
-  OBSTACLE: "obstacle",
+  ROCK: "rock",
 };
 
 const ASSET_TAGS = {
