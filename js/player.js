@@ -17,7 +17,7 @@ class Player extends Actor {
 
   transitionToNewContainer(container) {
     super.transitionToNewContainer(container);
-    if (container.contains(TYPE_TAGS.FIRE)) this.takeDamage(1);
+    if (this.container.contains(TYPE_TAGS.FIRE)) this.takeDamage(1);
   }
 
   takeDamage(damage) {
