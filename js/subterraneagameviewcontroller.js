@@ -11,10 +11,9 @@ class SubterraneaGame {
     this.grid = new Grid(this.boardWidth, SubterraneaGame.GRID_SIZE);
 
     this.player = new Player(this, SubterraneaGame.PLAYER_SPEED);
-    this.bombs = [];
     this.actors = [this.player];
 
-    this.rocks = this.generateRocks(50);
+    this.objects = this.generateRocks(50);
     this.fillGrid();
 
     this.assets = {};
@@ -32,12 +31,12 @@ class SubterraneaGame {
   draw() {
     //draw the board
     this.assets[ASSET_TAGS.BOARD]();
+    this.objects.forEach((object) => this.assets[object.asset](object));
     //draw sinkholes
     //draw terrain
-    // this.context.fillStyle = "rgb(0, 0, 255)";
-    this.rocks.forEach((rock) => this.assets[ASSET_TAGS.ROCK](rock));
+    // this.rocks.forEach((rock) => this.assets[rock.asset](rock));
     //draw monsters
-    this.bombs.forEach((bomb) => this.assets[ASSET_TAGS.BOMB](bomb));
+    this.actors.forEach((actor) => this.assets[actor.asset](actor));
     //draw player
     this.assets[ASSET_TAGS.PLAYER]();
   }
@@ -56,16 +55,31 @@ class SubterraneaGame {
       true
     );
 
-    this.placeHolderAsset(ASSET_TAGS.ROCK, "rgb(0, 0, 255)", this.rocks, false);
+    this.placeHolderAsset(
+      ASSET_TAGS.ROCK,
+      "rgb(0, 0, 255)",
+      this.objects,
+      false
+    );
 
-    this.placeHolderAsset(ASSET_TAGS.BOMB, "rgb(255, 0 ,0)", this.bombs, false);
+    this.placeHolderAsset(
+      ASSET_TAGS.BOMB,
+      "rgb(255, 0, 0)",
+      this.actors,
+      false
+    );
+
+    this.placeHolderAsset(
+      ASSET_TAGS.FIRE,
+      "rgb(255, 127, 0)",
+      this.objects,
+      false
+    );
   }
 
   moveActors() {
     this.actors.forEach((actor) => actor.move(this.boardWidth));
   }
-
-  cleanBoard() {}
 
   handleKeyDown(key) {
     //console.log(key);
@@ -125,17 +139,16 @@ class SubterraneaGame {
   fillGrid() {
     const playerGridX = Math.floor(SubterraneaGame.GRID_SIZE * Math.random());
     const playerGridY = Math.floor(SubterraneaGame.GRID_SIZE * Math.random());
-    this.grid.container[playerGridY][playerGridX].objects.push(this.player);
     this.player.newContainer(this.grid.container[playerGridY][playerGridX]);
     this.player.snapToGrid();
 
-    const rockPlacements = new Shuffler(
+    const objectPlacements = new Shuffler(
       this.getObstaclePlacementsAround(playerGridY, playerGridX, 1)
     );
-    this.rocks.forEach((rock) => {
-      const index = rockPlacements.drawNext();
-      this.grid.container[index.y][index.x].objects.push(rock);
-      rock.newContainer(this.grid.container[index.y][index.x]);
+    this.objects.forEach((object) => {
+      const index = objectPlacements.drawNext();
+      this.grid.container[index.y][index.x].objects.push(object);
+      object.newContainer(this.grid.container[index.y][index.x]);
     });
   }
 
@@ -155,46 +168,44 @@ class SubterraneaGame {
   }
 
   newBomb() {
-    const bomb = new Bomb(
-      this,
-      ASSET_TAGS.BOMB,
-      TYPE_TAGS.BOMB,
-      this.bombs.length,
-      5,
-      2
+    this.spawnObject(
+      Bomb,
+      [this, ASSET_TAGS.BOMB, TYPE_TAGS.BOMB, 0, 2, 2, 1],
+      [this.player.container]
     );
-    bomb.newContainer(this.player.container);
-    bomb.snapToGrid();
-    this.grid.container[bomb.container.gridY][
-      bomb.container.gridX
-    ].objects.push(bomb);
-    this.bombs.push(bomb);
-    this.actors.push(bomb);
+  }
+
+  spawnObject(constructor, args, containers) {
+    containers.forEach((container) => {
+      const instance = new constructor(...args);
+      instance.newContainer(container);
+      if (instance instanceof Actor) {
+        instance.snapToGrid();
+        instance.id = this.actors.length;
+        this.actors.push(instance);
+      } else if (instance instanceof GameObject) {
+        instance.id = this.objects.length;
+        this.objects.push(instance);
+      }
+      // console.log(
+      //   `spawned object: ${instance.asset} ${instance.type} ${instance.id} at: ${instance.container.gridX} ${instance.container.gridY}`
+      // );
+    });
   }
 
   destroy(object) {
-    switch (object.type) {
-      case TYPE_TAGS.ROCK:
-        object.container.remove(object);
-        this.remove(object, this.rocks);
-        break;
-      case TYPE_TAGS.BOMB:
-        object.container.remove(object);
-        this.remove(object, this.bombs, true);
-        break;
-      default:
-        break;
-    }
+    object.container.remove(object);
+    if (object instanceof Actor) this.remove(object, this.actors);
+    else this.remove(object, this.objects);
     this.actors.forEach((actor) => actor.refreshNearbyObjects());
   }
 
-  remove(object, collection, isActor) {
+  remove(object, collection) {
     if (collection.includes(object)) {
       for (let id = object.id + 1; id < collection.length; id++) {
         collection[id].id -= 1;
       }
       collection.splice(object.id, 1);
-      if (isActor) this.actors.splice(object.id + 1, 1);
     }
   }
 

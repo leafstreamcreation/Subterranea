@@ -26,8 +26,42 @@ class Grid {
     return containers.filter((e) => e !== null);
   }
 
+  containersInDirection(container, direction, limit) {
+    switch (direction) {
+      case DIRECTION.UP:
+        return this.containers(container, (c) => this.containerAbove(c), limit);
+      case DIRECTION.DOWN:
+        return this.containers(container, (c) => this.containerBelow(c), limit);
+      case DIRECTION.LEFT:
+        return this.containers(
+          container,
+          (c) => this.containerLeftOf(c),
+          limit
+        );
+      case DIRECTION.RIGHT:
+        return this.containers(
+          container,
+          (c) => this.containerRightOf(c),
+          limit
+        );
+      default:
+    }
+    return containers;
+  }
+
+  containers(container, nextContainerFunction, quantity) {
+    const containers = [];
+    let nextContainer = nextContainerFunction(container);
+    for (let i = 0; i < quantity; i++) {
+      if (nextContainer === null) break;
+      containers.push(nextContainer);
+      nextContainer = nextContainerFunction(nextContainer);
+    }
+    return containers;
+  }
+
   containerAbove(container) {
-    if (container === null) return container;
+    if (container === null) return null;
     return container.gridY === 0
       ? null
       : this.container[container.gridY - 1][container.gridX];
@@ -51,5 +85,3 @@ class Grid {
       : this.container[container.gridY][container.gridX + 1];
   }
 }
-
-//TODO: Finish Grid and utilize it in subterraneagameviewcontroller

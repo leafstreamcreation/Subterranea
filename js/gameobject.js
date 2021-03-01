@@ -16,6 +16,8 @@ class GameObject {
     this.size = new Size(container.width, container.height);
   }
 
+  takeDamage(damage) {}
+
   center() {
     return new Position(
       this.position.x + Math.floor(this.size.width / 2),

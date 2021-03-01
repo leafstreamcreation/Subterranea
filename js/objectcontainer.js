@@ -28,13 +28,11 @@ class ObjectContainer {
   }
 
   isInBounds(object) {
-    if (object.center().x < this.x) return BOUNDS.OUTSIDE_LEFT;
-    else if (object.center().x > this.x + this.width)
-      return BOUNDS.OUTSIDE_RIGHT;
-    else if (object.center().y < this.y) return BOUNDS.OUTSIDE_UP;
-    else if (object.center().y > this.y + this.height)
-      return BOUNDS.OUTSIDE_DOWN;
-    return BOUNDS.INSIDE;
+    if (object.center().x < this.x) return DIRECTION.LEFT;
+    else if (object.center().x > this.x + this.width) return DIRECTION.RIGHT;
+    else if (object.center().y < this.y) return DIRECTION.UP;
+    else if (object.center().y > this.y + this.height) return DIRECTION.DOWN;
+    return DIRECTION;
   }
 
   nextContainer(direction) {
@@ -50,5 +48,25 @@ class ObjectContainer {
       default:
         return this;
     }
+  }
+
+  contains(type) {
+    for (let index = 0; index < this.objects.length; index++) {
+      if (this.objects[index].type === type) return true;
+    }
+    return false;
+  }
+
+  containersUpToFirstObject(type, direction, limit, inclusive) {
+    const containers = this.grid.containersInDirection(this, direction, limit);
+    const result = [];
+    for (let i = 0; i < containers.length; i++) {
+      if (containers[i].contains(type)) {
+        if (inclusive) result.push(containers[i]);
+        break;
+      }
+      result.push(containers[i]);
+    }
+    return result;
   }
 }

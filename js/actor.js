@@ -7,7 +7,7 @@ class Actor extends GameObject {
     };
     this.speed = speed;
     this.nearbyObjects = [];
-    this.insideContainer = null;
+    this.exitingFrom = null;
     this.blocked = {
       vertical: MOVEMENT.NONE,
       horizontal: MOVEMENT.NONE,
@@ -16,25 +16,37 @@ class Actor extends GameObject {
 
   move(bound) {
     if (
-      this.blocked.horizontal === MOVEMENT.NONE ||
-      this.blocked.horizontal !== this.moveState.horizontal
-    )
-      this.position.x += this.moveState.horizontal * this.speed;
-    if (
-      this.blocked.vertical === MOVEMENT.NONE ||
-      this.blocked.vertical !== this.moveState.vertical
-    )
-      this.position.y += this.moveState.vertical * this.speed;
-    this.confineToGameBoard(bound);
+      !(
+        this.moveState.vertical === MOVEMENT.NONE &&
+        this.moveState.horizontal === MOVEMENT.NONE
+      )
+    ) {
+      if (
+        this.blocked.horizontal === MOVEMENT.NONE ||
+        this.blocked.horizontal !== this.moveState.horizontal
+      )
+        this.position.x += this.moveState.horizontal * this.speed;
+      if (
+        this.blocked.vertical === MOVEMENT.NONE ||
+        this.blocked.vertical !== this.moveState.vertical
+      )
+        this.position.y += this.moveState.vertical * this.speed;
+      this.confineToGameBoard(bound);
 
-    this.checkForCollisions();
+      this.checkForCollisions();
 
-    this.insideContainer = this.container.isInBounds(this);
-    if (this.insideContainer !== BOUNDS.INSIDE) this.transitionToNewContainer();
+      this.exitingFrom = this.container.isInBounds(this);
+      if (this.exitingFrom !== DIRECTION.NONE) this.transitionToNewContainer();
+    }
   }
 
   refreshNearbyObjects() {
     this.nearbyObjects = this.container.nearbyObjects();
+    // console.log(
+    //   `${this.type} nearby objects: (${
+    //     this.nearbyObjects.length
+    //   }) ${this.nearbyObjects.map((e) => e.type)}`
+    // );
   }
 
   checkForCollisions() {
@@ -49,26 +61,8 @@ class Actor extends GameObject {
   }
 
   transitionToNewContainer() {
-    let nextContainerDirection;
-    switch (this.insideContainer) {
-      case BOUNDS.OUTSIDE_UP:
-        nextContainerDirection = DIRECTION.UP;
-        break;
-      case BOUNDS.OUTSIDE_RIGHT:
-        nextContainerDirection = DIRECTION.RIGHT;
-        break;
-      case BOUNDS.OUTSIDE_DOWN:
-        nextContainerDirection = DIRECTION.DOWN;
-        break;
-      case BOUNDS.OUTSIDE_LEFT:
-        nextContainerDirection = DIRECTION.LEFT;
-        break;
-      default:
-        nextContainerDirection = DIRECTION.NONE;
-        break;
-    }
     this.container.remove(this);
-    this.newContainer(this.container.nextContainer(nextContainerDirection));
+    this.newContainer(this.container.nextContainer(this.exitingFrom));
   }
 
   confineToGameBoard(bound) {
@@ -83,15 +77,16 @@ class Actor extends GameObject {
   newContainer(container) {
     this.container = container;
     this.nearbyObjects = container.nearbyObjects();
-    this.insideContainer = BOUNDS.INSIDE;
-    console.log(
-      `${this.type} entered container ${container.gridX},${container.gridY}`
-    );
-    console.log(
-      `nearby objects: (${this.nearbyObjects.length}) ${this.nearbyObjects.map(
-        (e) => e.type
-      )}`
-    );
+    this.exitingFrom = DIRECTION.NONE;
+    this.container.objects.push(this);
+    // console.log(
+    //   `${this.type} entered container ${container.gridX},${container.gridY}`
+    // );
+    // console.log(
+    //   `${this.type} nearby objects: (${
+    //     this.nearbyObjects.length
+    //   }) ${this.nearbyObjects.map((e) => e.type)}`
+    // );
   }
 
   snapToGrid() {

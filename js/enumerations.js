@@ -6,14 +6,6 @@ const MOVEMENT = {
   NONE: 0,
 };
 
-const BOUNDS = {
-  INSIDE: 0,
-  OUTSIDE_UP: 1,
-  OUTSIDE_RIGHT: 2,
-  OUTSIDE_DOWN: 3,
-  OUTSIDE_LEFT: 4,
-};
-
 const DIRECTION = {
   NONE: 0,
   UP: 1,
@@ -26,6 +18,7 @@ const TYPE_TAGS = {
   PLAYER: "player",
   BOMB: "bomb",
   ROCK: "rock",
+  FIRE: "fire",
 };
 
 const ASSET_TAGS = {
@@ -33,6 +26,7 @@ const ASSET_TAGS = {
   PLAYER: "player",
   BOMB: "bomb",
   ROCK: "rock",
+  FIRE: "fire",
 };
 
 const KEY_TAGS = {
