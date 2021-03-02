@@ -19,6 +19,8 @@ class GameObject {
 
   takeDamage(damage) {}
 
+  clearTimeouts() {}
+
   center() {
     return new Position(
       this.position.x + Math.floor(this.size.width / 2),

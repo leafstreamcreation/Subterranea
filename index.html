@@ -8,6 +8,23 @@
     <title>Subterranea</title>
   </head>
   <body>
+    <div class="hud">
+      <div class="resource-display">
+        <span>Unobtanium: </span>
+        <span id="resources"></span>
+        <span>/</span>
+        <span id="resource-goal"></span>
+      </div>
+      <div class="health-display">
+        <span>Health: </span>
+        <span id="health"></span>
+        <span id="health-max">/2</span>
+      </div>
+      <div class="bomb-power-display">
+        <span>Bomb power: </span>
+        <span id="bomb-power"></span>
+      </div>
+    </div>
     <div id="game-board">
       <canvas id="canvas" width="500" height="500"></canvas>
     </div>
@@ -24,6 +41,7 @@
     <script type="text/javascript" src="js/rock.js"></script>
     <script type="text/javascript" src="js/actor.js"></script>
     <script type="text/javascript" src="js/bomb.js"></script>
+    <script type="text/javascript" src="js/sinkhole.js"></script>
     <script type="text/javascript" src="js/player.js"></script>
     <script type="text/javascript" src="js/subterraneagameviewcontroller.js"></script>
     <script type="text/javascript" src="js/index.js"></script>

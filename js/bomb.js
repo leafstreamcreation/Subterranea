@@ -20,18 +20,17 @@ class Bomb extends Actor {
   newContainer(container) {
     super.newContainer(container);
     if (!this.placed) {
-      this.fuse = setTimeout(() => this.detonate(false), this.fuseTime);
+      this.fuse = setTimeout(() => this.detonate(), this.fuseTime);
       this.placed = true;
     }
   }
 
   takeDamage(damage) {
-    this.detonate(true);
+    this.detonate();
   }
 
-  detonate(early) {
+  detonate() {
     // console.log(`BOOM`);
-    if (early) clearTimeout(this.fuse);
     this.controller.destroy(this);
     const aoe = this.areaOfEffect();
     aoe.forEach((container) => {
@@ -45,6 +44,10 @@ class Bomb extends Actor {
       [this.controller, ASSET_TAGS.FIRE, TYPE_TAGS.FIRE, 0],
       aoe
     );
+  }
+
+  clearTimeouts() {
+    clearTimeout(this.fuse);
   }
 
   areaOfEffect() {

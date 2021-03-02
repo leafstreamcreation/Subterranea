@@ -84,4 +84,13 @@ class Grid {
       ? null
       : this.container[container.gridY][container.gridX + 1];
   }
+
+  hasObject(typeTag) {
+    for (let y = 0; y < this.size; y++) {
+      for (let x = 0; x < this.size; x++) {
+        if (this.container[y][x].contains(typeTag)) return true;
+      }
+    }
+    return false;
+  }
 }

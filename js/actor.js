@@ -42,11 +42,11 @@ class Actor extends GameObject {
 
   refreshNearbyObjects() {
     this.nearbyObjects = this.container.nearbyObjects();
-    console.log(
-      `${this.type} nearby objects: (${
-        this.nearbyObjects.length
-      }) ${this.nearbyObjects.map((e) => e.type)}`
-    );
+    // console.log(
+    //   `${this.type} nearby objects: (${
+    //     this.nearbyObjects.length
+    //   }) ${this.nearbyObjects.map((e) => e.type)}`
+    // );
   }
 
   checkForCollisions() {
@@ -79,14 +79,14 @@ class Actor extends GameObject {
     this.nearbyObjects = container.nearbyObjects();
     this.exitingFrom = DIRECTION.NONE;
     this.container.objects.push(this);
-    console.log(
-      `${this.type} entered container ${container.gridX},${container.gridY}`
-    );
-    console.log(
-      `${this.type} nearby objects: (${
-        this.nearbyObjects.length
-      }) ${this.nearbyObjects.map((e) => e.type)}`
-    );
+    // console.log(
+    //   `${this.type} entered container ${container.gridX},${container.gridY}`
+    // );
+    // console.log(
+    //   `${this.type} nearby objects: (${
+    //     this.nearbyObjects.length
+    //   }) ${this.nearbyObjects.map((e) => e.type)}`
+    // );
   }
 
   snapToGrid() {
