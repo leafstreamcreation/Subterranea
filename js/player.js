@@ -17,7 +17,20 @@ class Player extends Actor {
 
   transitionToNewContainer(container) {
     super.transitionToNewContainer(container);
-    if (this.container.contains(TYPE_TAGS.FIRE)) this.takeDamage(1);
+    this.container.objects.forEach((object) => {
+      switch (object.type) {
+        case TYPE_TAGS.FIRE:
+          this.takeDamage(this.controller.bombDamage);
+          break;
+        case TYPE_TAGS.POWERUP:
+        case TYPE_TAGS.RESOURCE:
+          this.controller.playerPickedUp(object.type);
+          this.controller.destroy(object);
+          break;
+        default:
+          break;
+      }
+    });
   }
 
   takeDamage(damage) {

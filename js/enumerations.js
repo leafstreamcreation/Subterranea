@@ -19,6 +19,8 @@ const TYPE_TAGS = {
   BOMB: "bomb",
   ROCK: "rock",
   FIRE: "fire",
+  POWERUP: "gunpowder",
+  RESOURCE: "unobtainium",
 };
 
 const ASSET_TAGS = {
@@ -27,6 +29,8 @@ const ASSET_TAGS = {
   BOMB: "bomb",
   ROCK: "rock",
   FIRE: "fire",
+  GUNPOWDER: "gunpowder",
+  UNOBTAINIUM: "unobtainium",
 };
 
 const KEY_TAGS = {

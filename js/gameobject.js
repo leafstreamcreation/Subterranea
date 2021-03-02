@@ -14,6 +14,7 @@ class GameObject {
     this.container = container;
     this.position = new Position(container.x, container.y);
     this.size = new Size(container.width, container.height);
+    this.container.objects.push(this);
   }
 
   takeDamage(damage) {}

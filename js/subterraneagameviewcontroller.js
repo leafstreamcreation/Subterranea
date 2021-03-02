@@ -2,6 +2,7 @@ class SubterraneaGame {
   static REFRESH_MILLISECONDS = 16;
   static GRID_SIZE = 15;
   static PLAYER_SPEED = 2;
+  static BOMB_SPEED = 2;
 
   constructor(canvas, context) {
     this.boardWidth = canvas.width;
@@ -18,6 +19,12 @@ class SubterraneaGame {
 
     this.assets = {};
     this.loadAssets();
+
+    this.bombPower = 1;
+    this.bombDamage = 1;
+    this.bombFuseTime = 3000;
+
+    this.resources = 0;
 
     setInterval(() => this.gameLoop(), SubterraneaGame.REFRESH_MILLISECONDS);
   }
@@ -72,6 +79,20 @@ class SubterraneaGame {
     this.placeHolderAsset(
       ASSET_TAGS.FIRE,
       "rgb(255, 127, 0)",
+      this.objects,
+      false
+    );
+
+    this.placeHolderAsset(
+      ASSET_TAGS.GUNPOWDER,
+      "rgb(0, 0, 0)",
+      this.objects,
+      false
+    );
+
+    this.placeHolderAsset(
+      ASSET_TAGS.UNOBTAINIUM,
+      "rgb(255, 255, 255)",
       this.objects,
       false
     );
@@ -147,7 +168,6 @@ class SubterraneaGame {
     );
     this.objects.forEach((object) => {
       const index = objectPlacements.drawNext();
-      this.grid.container[index.y][index.x].objects.push(object);
       object.newContainer(this.grid.container[index.y][index.x]);
     });
   }
@@ -170,7 +190,16 @@ class SubterraneaGame {
   newBomb() {
     this.spawnObject(
       Bomb,
-      [this, ASSET_TAGS.BOMB, TYPE_TAGS.BOMB, 0, 2, 2, 1],
+      [
+        this,
+        ASSET_TAGS.BOMB,
+        TYPE_TAGS.BOMB,
+        0,
+        SubterraneaGame.BOMB_SPEED,
+        this.bombPower,
+        this.bombDamage,
+        this.bombFuseTime,
+      ],
       [this.player.container]
     );
   }
@@ -206,6 +235,21 @@ class SubterraneaGame {
         collection[id].id -= 1;
       }
       collection.splice(object.id, 1);
+    }
+  }
+
+  playerPickedUp(type) {
+    console.log(`player picked up: ${type}`);
+    switch (type) {
+      case TYPE_TAGS.POWERUP:
+        this.bombPower += 1;
+        this.bombFuseTime -= 500;
+        break;
+      case TYPE_TAGS.RESOURCE:
+        this.resources += 1;
+        break;
+      default:
+        break;
     }
   }
 

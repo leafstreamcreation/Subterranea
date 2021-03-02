@@ -1,37 +1,15 @@
-class Bomb extends Actor {
-  constructor(
-    controller,
-    assetTag,
-    typeTag,
-    id,
-    speed,
-    power,
-    damage,
-    fuseTime
-  ) {
-    super(controller, assetTag, typeTag, id, speed);
-    this.power = power;
-    this.placed = false;
-    this.damage = damage;
-    this.fuse = null;
-    this.fuseTime = fuseTime;
-  }
-
-  newContainer(container) {
-    super.newContainer(container);
-    if (!this.placed) {
-      this.fuse = setTimeout(() => this.detonate(false), this.fuseTime);
-      this.placed = true;
-    }
+class GunPowder extends GameObject {
+  constructor(cotroller, assetTag, tyeTag, id) {
+    super(cotroller, assetTag, tyeTag, id);
+    this.damage = 1;
+    this.power = 1;
   }
 
   takeDamage(damage) {
-    this.detonate(true);
+    this.detonate();
   }
 
-  detonate(early) {
-    // console.log(`BOOM`);
-    if (early) clearTimeout(this.fuse);
+  detonate() {
     this.controller.destroy(this);
     const aoe = this.areaOfEffect();
     aoe.forEach((container) => {
