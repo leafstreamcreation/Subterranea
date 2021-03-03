@@ -33,14 +33,18 @@ function gameEnd(victory) {
         10000
       );
   }
-  setTimeout(() => showMessage("Refresh to try again!", 10000), 10000);
+  setTimeout(() => showMessage("Refresh to play again!", 10000), 10000);
 }
 
 let playerExploded = false;
 
 function playerHealthChanged(newHealth) {
-  const healthDisplay = document.querySelector("#health");
-  healthDisplay.innerHTML = `${newHealth}`;
+  const healthDisplay = document.querySelector(".health-display");
+  if (newHealth < 2) healthDisplay.style.color = "red";
+  else healthDisplay.style.color = "black";
+
+  const health = document.querySelector("#health");
+  health.innerHTML = `${newHealth}`;
   if (newHealth === 0) playerExploded = true;
   showMessage("Ouch!", 3000);
 }
@@ -48,8 +52,12 @@ function playerHealthChanged(newHealth) {
 let oldResources = 3;
 
 function resourcesChanged(newResources) {
-  const resourceDisplay = document.querySelector("#resources");
-  resourceDisplay.innerHTML = `${newResources}`;
+  const resourceDisplay = document.querySelector(".resource-display");
+  if (newResources < 3) resourceDisplay.style.color = "red";
+  else resourceDisplay.style.color = "black";
+
+  const resource = document.querySelector("#resources");
+  resource.innerHTML = `${newResources}`;
   if (newResources > oldResources) {
     showMessage("Fuel collected!", 3000);
   }
@@ -57,17 +65,19 @@ function resourcesChanged(newResources) {
 }
 
 function bombPowerChanged(newBombPower) {
-  const bombPowerDisplay = document.querySelector("#bomb-power");
-  bombPowerDisplay.innerHTML = `${newBombPower}`;
+  const bombPowerDisplay = document.querySelector(".bomb-power-display");
+  if (newBombPower > 4) bombPowerDisplay.style.color = "red";
+  const bombPower = document.querySelector("#bomb-power");
+  bombPower.innerHTML = `${newBombPower}`;
   showMessage("Bomb Danger Up!", 3000);
 }
 
-let messageTimoutId;
+let messageTimeoutId;
 
 function showMessage(message, timeout) {
   const messageDisplay = document.querySelector("#message-field");
   messageDisplay.innerHTML = message;
-  if (messageTimoutId !== null) clearTimeout(messageTimoutId);
+  if (messageTimeoutId !== null) clearTimeout(messageTimeoutId);
   messageTimeoutId = setTimeout(() => {
     messageDisplay.innerHTML = "";
     messageTimoutId = null;

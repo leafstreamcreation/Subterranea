@@ -84,55 +84,55 @@ class SubterraneaGame {
 
   loadAssets() {
     this.assets[ASSET_TAGS.BOARD] = () => {
-      this.context.fillStyle = "rgb(255, 255, 0)";
+      this.context.fillStyle = "rgb(47, 36, 84)";
       this.context.fillRect(0, 0, this.boardWidth, this.boardHeight);
     };
 
     this.placeHolderAsset(
       ASSET_TAGS.SINKHOLE,
-      "rgb(127, 127, 127)",
+      "rgb(0, 0, 0)",
       this.sinkhole,
       true
     );
 
     this.placeHolderAsset(
       ASSET_TAGS.PLAYER,
-      "rgb(0, 255, 0)",
+      "rgb(66, 235, 218)",
       this.player,
       true
     );
 
     this.placeHolderAsset(
       ASSET_TAGS.ROCK,
-      "rgb(0, 0, 255)",
+      "rgb(122, 84, 34)",
       this.objects,
       false
     );
 
     this.placeHolderAsset(
       ASSET_TAGS.BOMB,
-      "rgb(255, 0, 0)",
+      "rgb(140, 36, 36)",
       this.actors,
       false
     );
 
     this.placeHolderAsset(
       ASSET_TAGS.FIRE,
-      "rgb(255, 127, 0)",
+      "rgb(247, 71, 27)",
       this.objects,
       false
     );
 
     this.placeHolderAsset(
       ASSET_TAGS.GUNPOWDER,
-      "rgb(0, 0, 0)",
+      "rgb(128, 113, 113)",
       this.objects,
       false
     );
 
     this.placeHolderAsset(
       ASSET_TAGS.UNOBTAINIUM,
-      "rgb(255, 255, 255)",
+      "rgb(219, 212, 68)",
       this.objects,
       false
     );
