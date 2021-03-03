@@ -15,3 +15,10 @@ body {
   .message-board {
     width: 500px;
   }
+
+  .control-legend {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 500px;
+  }
