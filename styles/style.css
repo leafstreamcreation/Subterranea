@@ -11,3 +11,7 @@ body {
     justify-content: space-between;
     width: 500px;
   }
+
+  .message-board {
+    width: 500px;
+  }

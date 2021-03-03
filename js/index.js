@@ -16,7 +16,7 @@ window.addEventListener("load", () => {
     "resource-goal"
   ).innerHTML = `${SubterraneaGame.RESOURCE_VICTORY}`;
   showMessage(
-    "Your'e stuck underground! Gather resources for your transport home-before it melts down",
+    "Your'e stuck underground! Gather resources for your transport home... before it melts down!",
     10000
   );
 });
