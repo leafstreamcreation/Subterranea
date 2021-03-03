@@ -3,7 +3,7 @@ class SubterraneaGame {
   static GRID_SIZE = 15;
   static PLAYER_SPEED = 2;
   static BOMB_SPEED = 2;
-  static ROCK_AMOUNT = 100;
+  static ROCK_AMOUNT = 1;
   static RESOURCE_VICTORY = 10;
   static RESOURCE_DOWNTICK_INTERVAL = 15000;
 
@@ -32,7 +32,8 @@ class SubterraneaGame {
 
     this.actors = [this.player];
     this.objects = [];
-    this.sinkhole = null;
+    this.sinkhole = new SinkHole(this);
+    this.sinkhole.newContainer(this.grid.container[0][0]);
     this.refreshBoard(SubterraneaGame.ROCK_AMOUNT);
 
     this.assets = {};
@@ -60,10 +61,6 @@ class SubterraneaGame {
     if (this.resources === 0) this.endGame(false);
     else if (this.resources === SubterraneaGame.RESOURCE_VICTORY)
       this.endGame(true);
-    if (this.objects.length === 0) {
-      this.refreshBoard(SubterraneaGame.ROCK_AMOUNT);
-      this.player.snapToGrid;
-    }
     this.moveActors();
     this.draw();
   }
@@ -71,7 +68,7 @@ class SubterraneaGame {
   draw() {
     //draw the board
     this.assets[ASSET_TAGS.BOARD]();
-    // this.assets[ASSET_TAGS.SINKHOLE]();
+    this.assets[ASSET_TAGS.SINKHOLE]();
     // console.log(this.objects.map((object) => object.position));
     this.objects.forEach((object) => this.assets[object.asset](object));
     //draw terrain
@@ -206,11 +203,9 @@ class SubterraneaGame {
         [this.grid.container[index.y][index.x]]
       );
       if (id === sinkHoleRockId) {
-        console.log(`new sinkhole created`);
-        this.spawnObject(
-          SinkHole,
-          [this],
-          [this.grid.container[index.y][index.x]]
+        console.log(`new sinkhole location`);
+        this.sinkhole.transitionToNewContainer(
+          this.grid.container[index.y][index.x]
         );
         console.log(
           `sinkhole: ${this.sinkhole.position.x},${this.sinkhole.position.y}`
@@ -224,6 +219,20 @@ class SubterraneaGame {
     const playerGridY = Math.floor(SubterraneaGame.GRID_SIZE * Math.random());
     this.player.newContainer(this.grid.container[playerGridY][playerGridX]);
     this.player.snapToGrid();
+  }
+
+  placeSinkhole() {
+    const placementShuffler = new Shuffler(
+      this.getObstaclePlacementsAround(
+        this.player.container.gridY,
+        this.player.container.gridX,
+        1
+      )
+    );
+    const sinkholePosition = placementShuffler.drawNext();
+    this.sinkhole.newContainer(
+      this.grid.container[sinkholePosition.y][sinkholePosition.x]
+    );
   }
 
   getObstaclePlacementsAround(avoidY, avoidX, distance) {
@@ -268,6 +277,7 @@ class SubterraneaGame {
         this.actors.push(instance);
       } else if (instance instanceof SinkHole) {
         this.sinkhole = instance;
+        console.log(this.sinkhole);
       } else if (instance instanceof GameObject) {
         instance.id = this.objects.length;
         this.objects.push(instance);
@@ -314,12 +324,11 @@ class SubterraneaGame {
   }
 
   playerEnteredSinkhole() {
-    // console.log(`player entered sinkhole!`);
-    this.sinkhole.container.remove(this.sinkhole);
+    console.log(`player entered sinkhole!`);
     // this.clearBoard();
-    // this.player.snapToGrid();
-    // this.refreshBoard(SubterraneaGame.ROCK_AMOUNT);
-    // console.log(this.objects);
+    this.player.snapToGrid();
+    this.refreshBoard(SubterraneaGame.ROCK_AMOUNT);
+    console.log(this.objects);
   }
 
   playerDied() {
@@ -333,15 +342,11 @@ class SubterraneaGame {
   }
 
   clearBoard() {
-    this.objects.forEach((object) => {
-      object.container.remove(object);
-      object.clearTimeouts();
-    });
+    this.objects.forEach((object) => this.destroy(object));
     for (let i = 1; i < this.actors.length; i++) {
       this.actors[i].container.remove(this.actors[i]);
       this.actors[i].clearTimeouts();
     }
-    this.objects = [];
     this.actors = [this.player];
   }
 
