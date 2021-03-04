@@ -93,4 +93,10 @@ class Grid {
     }
     return false;
   }
+
+  clear() {
+    this.container.forEach((row) =>
+      row.forEach((objectContainer) => objectContainer.clear())
+    );
+  }
 }

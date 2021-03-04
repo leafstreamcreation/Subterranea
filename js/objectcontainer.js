@@ -52,21 +52,30 @@ class ObjectContainer {
 
   contains(type) {
     for (let index = 0; index < this.objects.length; index++) {
-      if (this.objects[index].type === type) return true;
+      if (this.objects[index].type === type) return index;
     }
-    return false;
+    return -1;
   }
 
   containersUpToFirstObject(type, direction, limit, inclusive) {
     const containers = this.grid.containersInDirection(this, direction, limit);
     const result = [];
     for (let i = 0; i < containers.length; i++) {
-      if (containers[i].contains(type)) {
+      if (containers[i].contains(type) > -1) {
         if (inclusive) result.push(containers[i]);
         break;
       }
       result.push(containers[i]);
     }
     return result;
+  }
+
+  clear() {
+    const emptiedList = [];
+    const playerIndex = this.contains(TYPE_TAGS.PLAYER);
+    const sinkholeIndex = this.contains(TYPE_TAGS.SINKHOLE);
+    if (sinkholeIndex > -1) emptiedList.push(this.objects[sinkholeIndex]);
+    if (playerIndex > -1) emptiedList.push(this.objects[playerIndex]);
+    this.objects = emptiedList;
   }
 }

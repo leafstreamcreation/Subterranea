@@ -3,7 +3,7 @@ class SubterraneaGame {
   static GRID_SIZE = 15;
   static PLAYER_SPEED = 2;
   static BOMB_SPEED = 2;
-  static ROCK_AMOUNT = 1;
+  static ROCK_AMOUNT = 100;
   static RESOURCE_VICTORY = 10;
   static RESOURCE_DOWNTICK_INTERVAL = 15000;
 
@@ -30,7 +30,7 @@ class SubterraneaGame {
     this.placePlayer();
     this.playerHealthUpdate(this.player.health);
 
-    this.actors = [this.player];
+    this.actors = [];
     this.objects = [];
     this.sinkhole = new SinkHole(this);
     this.sinkhole.newContainer(this.grid.container[0][0]);
@@ -61,6 +61,7 @@ class SubterraneaGame {
     if (this.resources === 0) this.endGame(false);
     else if (this.resources === SubterraneaGame.RESOURCE_VICTORY)
       this.endGame(true);
+    this.player.move(this.boardWidth);
     this.moveActors();
     this.draw();
   }
@@ -197,6 +198,8 @@ class SubterraneaGame {
     const sinkHoleRockId = Math.floor(numRocks * Math.random());
     for (let id = 0; id < numRocks; id++) {
       const index = objectPlacements.drawNext();
+      if (this.grid.container[index.y][index.x].contains(TYPE_TAGS.ROCK) > -1)
+        console.log("multiple rocks in the same place");
       this.spawnObject(
         Rock,
         [this, ASSET_TAGS.ROCK, TYPE_TAGS.ROCK, id],
@@ -275,25 +278,25 @@ class SubterraneaGame {
         instance.snapToGrid();
         instance.id = this.actors.length;
         this.actors.push(instance);
-      } else if (instance instanceof SinkHole) {
-        this.sinkhole = instance;
-        console.log(this.sinkhole);
-      } else if (instance instanceof GameObject) {
+      } else {
         instance.id = this.objects.length;
         this.objects.push(instance);
       }
-      // console.log(
-      //   `spawned object: ${instance.asset} ${instance.type} ${instance.id} at: ${instance.container.gridX} ${instance.container.gridY}`
-      // );
+
+      console.log(
+        `spawned object: ${instance.asset} ${instance.type} ${instance.id} at: ${instance.container.gridX} ${instance.container.gridY} (${instance.position.x}, ${instance.position.y})`
+      );
     });
   }
 
   destroy(object) {
     object.clearTimeouts();
-    object.container.remove(object);
+    if (object.container.remove(object) === false)
+      console.log(`failed to remove ${object.type}`);
+    this.player.refreshNearbyObjects();
+    this.actors.forEach((actor) => actor.refreshNearbyObjects());
     if (object instanceof Actor) this.remove(object, this.actors);
     else if (object instanceof GameObject) this.remove(object, this.objects);
-    this.actors.forEach((actor) => actor.refreshNearbyObjects());
   }
 
   remove(object, collection) {
@@ -306,7 +309,7 @@ class SubterraneaGame {
   }
 
   playerPickedUp(object) {
-    console.log(`player picked up: ${object.type}`);
+    // console.log(`player picked up: ${object.type}`);
     switch (object.type) {
       case TYPE_TAGS.POWERUP:
         this.bombPower += 1;
@@ -324,11 +327,9 @@ class SubterraneaGame {
   }
 
   playerEnteredSinkhole() {
-    console.log(`player entered sinkhole!`);
-    // this.clearBoard();
+    this.clearBoard();
     this.player.snapToGrid();
     this.refreshBoard(SubterraneaGame.ROCK_AMOUNT);
-    console.log(this.objects);
   }
 
   playerDied() {
@@ -342,12 +343,16 @@ class SubterraneaGame {
   }
 
   clearBoard() {
-    this.objects.forEach((object) => this.destroy(object));
-    for (let i = 1; i < this.actors.length; i++) {
-      this.actors[i].container.remove(this.actors[i]);
-      this.actors[i].clearTimeouts();
+    this.grid.clear();
+    this.clearRenderGroup(this.actors);
+    this.clearRenderGroup(this.objects);
+    this.player.refreshNearbyObjects();
+  }
+
+  clearRenderGroup(group) {
+    for (let i = 0; i < group.length; i++) {
+      group.pop();
     }
-    this.actors = [this.player];
   }
 
   placeHolderAsset(tag, color, group, isSingleton) {
