@@ -350,7 +350,8 @@ class SubterraneaGame {
   }
 
   clearRenderGroup(group) {
-    for (let i = 0; i < group.length; i++) {
+    for (let i = group.length - 1; i > -1; i--) {
+      group[i].clearTimeouts();
       group.pop();
     }
   }
